@@ -1,0 +1,19 @@
+resolution:
+  x: 800
+  y: 600
+tiles:
+  basic:
+    x: 40
+    y: 30
+balls:
+  basic:
+    x: 10
+    y: 10
+bars:
+  basic:
+    x: 80
+    y: 10
+background:
+  sparkle-basic:
+    x: 50
+    y: 50
