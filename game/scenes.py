@@ -1,6 +1,6 @@
 from game.objects import *
 from game.game_utils import read_tiles_csv
-from game.config import tile_cfggit
+from game.config import tile_cfg
 
 
 class Menu:
@@ -10,7 +10,7 @@ class Menu:
 
 
 class Scene:
-    def __init__(self, screen, bar, ball, life_icons, lives, tiles=None, background_objects=None, background=None):
+    def __init__(self, screen, bar, ball, life_icons, lives, tiles, background_objects=None, background=None):
         self.screen = screen
         if background is None:
             self.background = pygame.Surface(self.screen.get_size())
@@ -80,9 +80,9 @@ class Scene:
 
     def set_ball_off_bar(self):
         self.ball.on_bar = False
-        self.ball.speed = [1, -5]
+        self.ball.vector = (3/2 *math.pi, self.ball.speed)
 
-    def get_tiles_from_layout(self, file_name, screen, row_gap=40, tile_shift=40):
+    def get_tiles_from_layout(self, file_name, screen, row_gap=30, tile_shift=40):
         layout_arr = read_tiles_csv(file_name)
         screen_x = screen.get_rect().right - 2 * tile_shift
         tiles = list()
@@ -163,4 +163,3 @@ class TestSceneLayout(Scene):
                 lvl_sparkles.append(sparkle)
             sparkles.append(lvl_sparkles)
         Scene.__init__(self, screen, bar, ball, life_icons, lives, tiles, background_objects=sparkles)
-

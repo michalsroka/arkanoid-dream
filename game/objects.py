@@ -45,7 +45,9 @@ class Ball(pygame.sprite.Sprite):
         height = size_cfg.get('balls').get('basic').get('y')
         self.image, self.rect = load_image(ball_name, width=width, height=height, colorkey=-1)
 
-        self.speed = [0, -5]
+        self.speed = 7
+        angle = 3 / 2 * math.pi
+        self.vector = (angle, self.speed)
         screen = pygame.display.get_surface()
         self.area = screen.get_rect()
         self.left_bar = False
@@ -57,27 +59,42 @@ class Ball(pygame.sprite.Sprite):
             self.rect.midbottom = (bar_x, bar_y)
         # TODO change to vector speed
         # TODO fix collision detection
-        self.rect = self.rect.move(self.speed[0], self.speed[1])
+        self.rect = self.get_updated_pos()
         if self.rect.left < 0 or self.rect.right > self.area.right:
-            self.speed[0] = -self.speed[0]
+            self.side_bounce()
         if self.rect.top < 0:
-            self.speed[1] = -self.speed[1]
+            self.vertical_bounce()
+
+    def side_bounce(self):
+        new_angle = math.pi - self.vector[0]
+        if new_angle < 0:
+            new_angle = 2 * math.pi + new_angle
+        self.vector = (new_angle, self.speed)
+
+    def vertical_bounce(self):
+        self.vector = (2 * math.pi - self.vector[0], self.speed)
+
+    def get_updated_pos(self):
+        (angle, r) = self.vector
+        (dx, dy) = (r * math.cos(angle), r * math.sin(angle))
+        return self.rect.move(dx, dy)
 
     def set_pos(self, x, y):
         self.rect.topleft = x, y
 
+    # TODO consider only checking side collisions if not => front collision
     def collide_bar(self, bar_sprites):
         is_in_collision = False
         for bar_sprite in pygame.sprite.spritecollide(self, bar_sprites, dokill=0):
             is_in_collision = True
             if self.left_bar:
-                self.speed[1] = -self.speed[1]
+                self.vertical_bounce()
                 change_x = (self.rect.center[0] - bar_sprite.rect.center[0]) / bar_sprite.rect.size[0]
-                self.speed[0] += change_x * 7
-                if self.speed[0] < -7:
-                    self.speed[0] = -7
-                elif self.speed[0] > 7:
-                    self.speed[0] = 7
+                self.vector = ((1 + change_x / 4) * self.vector[0], self.speed)
+                if self.vector[0] < 7 / 6 * math.pi:
+                    self.vector = (7 / 6 * math.pi, self.speed)
+                elif self.vector[0] > 11 / 6 * math.pi:
+                    self.vector = (11 / 6 * math.pi, self.speed)
             self.left_bar = False
         return is_in_collision
 
@@ -87,21 +104,21 @@ class Ball(pygame.sprite.Sprite):
             is_in_collision = True
             if self.left_tile:
                 if self.check_side_collision(tile):
-                    self.speed[0] = -self.speed[0]
+                    self.side_bounce()
                 elif self.check_front_collision(tile):
-                    self.speed[1] = -self.speed[1]
+                    self.vertical_bounce()
         return is_in_collision
 
     def check_side_collision(self, sprite):
         # TODO handle division by zero
-        a = self.speed[1] / self.speed[0]
-        if self.speed[0] > 0:
+        a = math.tan(self.vector[0])
+        if 0 <= self.vector[0] < math.pi / 2 or 3 / 2 * math.pi <= self.vector[0] < 2 * math.pi:
             b = self.rect.center[1] - a * self.rect.right
             sprite_left_x = sprite.rect.left
             y_collision = a * sprite_left_x + b
             if sprite.rect.top < y_collision < sprite.rect.bottom:
                 return True
-        elif self.speed[0] < 0:
+        elif math.pi / 2 <= self.vector[0] < 3 / 2 * math.pi:
             b = self.rect.center[1] - a * self.rect.left
             sprite_right_x = sprite.rect.right
             y_collision = a * sprite_right_x + b
@@ -110,14 +127,14 @@ class Ball(pygame.sprite.Sprite):
         return False
 
     def check_front_collision(self, sprite):
-        a = self.speed[1] / self.speed[0]
-        if self.speed[1] < 0:
+        a = math.tan(self.vector[0])
+        if 0 <= self.vector[0] < math.pi:
             b = self.rect.top - a * self.rect.center[0]
             sprite_bottom_y = sprite.rect.bottom
             x_collision = (sprite_bottom_y - b) / a
             if sprite.rect.left <= x_collision <= sprite.rect.right:
                 return True
-        elif self.speed[1] > 0:
+        elif math.pi <= self.vector[0] < 2 * math.pi:
             b = self.rect.bottom - a * self.rect.center[0]
             sprite_top_y = sprite.rect.top
             x_collision = (sprite_top_y - b) / a
