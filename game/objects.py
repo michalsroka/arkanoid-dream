@@ -105,7 +105,10 @@ class Ball(pygame.sprite.Sprite):
             if self.left_tile:
                 if self.check_side_collision(tile):
                     self.side_bounce()
-                elif self.check_front_collision(tile):
+                # TODO check which variant works better
+                # elif self.check_front_collision(tile):
+                #     self.vertical_bounce()
+                else:
                     self.vertical_bounce()
         return is_in_collision
 

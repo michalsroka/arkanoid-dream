@@ -82,7 +82,7 @@ class Scene:
         self.ball.on_bar = False
         self.ball.vector = (3/2 *math.pi, self.ball.speed)
 
-    def get_tiles_from_layout(self, file_name, screen, row_gap=30, tile_shift=40):
+    def get_tiles_from_layout2(self, file_name, screen, row_gap=30, tile_shift=40):
         layout_arr = read_tiles_csv(file_name)
         screen_x = screen.get_rect().right - 2 * tile_shift
         tiles = list()
@@ -90,6 +90,25 @@ class Scene:
             y_coord = row_gap + y * row_gap
             for x, val in enumerate(row):
                 x_coord = tile_shift + (screen_x / len(row)) * x
+                tmp_tile = self.pick_tile(val)
+                if tmp_tile is not None:
+                    tmp_tile.rect = tmp_tile.rect.move(x_coord, y_coord)
+                    tiles.append(tmp_tile)
+        return tiles
+
+    def get_tiles_from_layout(self, file_name, screen):
+        layout_arr = read_tiles_csv(file_name)
+        screen_center_x = screen.get_rect().centerx
+        tiles = list()
+        num_of_columns = len(layout_arr[0])
+        tile_x_size, tile_y_size = Tile().rect.size
+        tiles_len_x = num_of_columns * tile_x_size
+        left_x = screen_center_x - (tiles_len_x / 2)
+        assert left_x > 0, "Too many columns of tiles. Change layout."
+        for y, row in enumerate(layout_arr):
+            y_coord = 2 * tile_y_size + y * tile_y_size
+            for x, val in enumerate(row):
+                x_coord = left_x + (tile_x_size * x)
                 tmp_tile = self.pick_tile(val)
                 if tmp_tile is not None:
                     tmp_tile.rect = tmp_tile.rect.move(x_coord, y_coord)
