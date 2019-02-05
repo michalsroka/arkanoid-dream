@@ -1,2 +1,10 @@
 balls:
-  basic:
+  basic: ball.png
+bars:
+  basic: bar.png
+tiles:
+  basic: tile.png
+  basic-strong: strong_tile.png
+background:
+  sparkle-basic: sparkle.png
+  life-icon: heart.png

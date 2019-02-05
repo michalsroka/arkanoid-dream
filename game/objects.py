@@ -1,7 +1,8 @@
 import pygame
-from game.game_utils import *
+from game.game_utils import load_image, darken_image
 from game.config import img_cfg, size_cfg
 import math
+import numpy as np
 
 
 class Bar(pygame.sprite.Sprite):
@@ -15,7 +16,7 @@ class Bar(pygame.sprite.Sprite):
         self.area = screen.get_rect()
         self.rect = self.rect.move(self.area.right / 2 - self.rect.right / 2,
                                    self.area.bottom - 30)
-        self.speed = 10
+        self.speed = 5
         self.state = "still"
         self.move_pos = [0, 0]
 
@@ -44,13 +45,18 @@ class Ball(pygame.sprite.Sprite):
         height = size_cfg.get('balls').get('basic').get('y')
         self.image, self.rect = load_image(ball_name, width=width, height=height, colorkey=-1)
 
-        self.speed = [5, -5]
+        self.speed = [0, -5]
         screen = pygame.display.get_surface()
         self.area = screen.get_rect()
         self.left_bar = False
         self.left_tile = True
+        self.on_bar = True
 
-    def update(self):
+    def update(self, bar_x=None, bar_y=None):
+        if self.on_bar:
+            self.rect.midbottom = (bar_x, bar_y)
+        # TODO change to vector speed
+        # TODO fix collision detection
         self.rect = self.rect.move(self.speed[0], self.speed[1])
         if self.rect.left < 0 or self.rect.right > self.area.right:
             self.speed[0] = -self.speed[0]
@@ -62,10 +68,16 @@ class Ball(pygame.sprite.Sprite):
 
     def collide_bar(self, bar_sprites):
         is_in_collision = False
-        for _ in pygame.sprite.spritecollide(self, bar_sprites, dokill=0):
+        for bar_sprite in pygame.sprite.spritecollide(self, bar_sprites, dokill=0):
             is_in_collision = True
             if self.left_bar:
                 self.speed[1] = -self.speed[1]
+                change_x = (self.rect.center[0] - bar_sprite.rect.center[0]) / bar_sprite.rect.size[0]
+                self.speed[0] += change_x * 7
+                if self.speed[0] < -7:
+                    self.speed[0] = -7
+                elif self.speed[0] > 7:
+                    self.speed[0] = 7
             self.left_bar = False
         return is_in_collision
 
@@ -81,6 +93,7 @@ class Ball(pygame.sprite.Sprite):
         return is_in_collision
 
     def check_side_collision(self, sprite):
+        # TODO handle division by zero
         a = self.speed[1] / self.speed[0]
         if self.speed[0] > 0:
             b = self.rect.center[1] - a * self.rect.right
@@ -113,31 +126,50 @@ class Ball(pygame.sprite.Sprite):
         return False
 
 
-
-
-
 class Tile(pygame.sprite.Sprite):
-    def __init__(self, resize=False):
+    def __init__(self, lives_left=1):
         pygame.sprite.Sprite.__init__(self)
-        tile_name = img_cfg.get('tiles').get('basic')
-        width = size_cfg.get('tiles').get('basic').get('x')
+        tile_name = self.get_tile_name()
+        width, height = self.get_size()
         height = size_cfg.get('tiles').get('basic').get('y')
         self.image, self.rect = load_image(tile_name, width=width, height=height)
+        self.lives_left = lives_left
 
     def set_pos(self, x, y):
         self.rect.topleft = x, y
+
+    def get_tile_name(self):
+        return img_cfg.get('tiles').get('basic')
+
+    def get_size(self):
+        return size_cfg.get('tiles').get('basic').get('x'), size_cfg.get('tiles').get('basic').get('y')
+
+    def kill(self):
+        if self.lives_left == 1:
+            pygame.sprite.Sprite.kill(self)
+        else:
+            # TODO change appearance after hit
+            self.lives_left -= 1
+
+
+class TestStrongTile(Tile):
+    def __init__(self):
+        Tile.__init__(self, lives_left=2)
+
+    def get_tile_name(self):
+        return img_cfg.get('tiles').get('basic-strong')
 
 
 class BackgroundObject(pygame.sprite.Sprite):
     # lvl value indicates how far from the foreground the object is
     def __init__(self, bg_obj_name, width, height, lvl=1, moving=True, colorkey=None):
         pygame.sprite.Sprite.__init__(self)
-        width = width * (0.9 ** lvl)
-        height = height * (0.9 ** lvl)
+        width = int(width * (0.9 ** lvl))
+        height = int(height * (0.9 ** lvl))
         self.image, self.rect = load_image(bg_obj_name, width=width, height=height, colorkey=colorkey)
-        self.image = darken_image(self.image, lvl * 2)
+        self.image = darken_image(self.image, lvl, colorkey)
         self.moving = moving
-        self.speed = 1
+        self.speed = 2
         angle = np.random.rand() * 2 * math.pi
         self.vector = (angle, self.speed)
 
@@ -158,8 +190,16 @@ class BackgroundObject(pygame.sprite.Sprite):
 
 
 class Sparkle(BackgroundObject):
-    def __init__(self, lvl=1):
+    def __init__(self, lvl=2):
         sparkle_name = img_cfg.get('background').get('sparkle-basic')
         width = size_cfg.get('background').get('sparkle-basic').get('x')
         height = size_cfg.get('background').get('sparkle-basic').get('y')
-        BackgroundObject.__init__(sparkle_name, width, height, lvl, colorkey=-1)
+        BackgroundObject.__init__(self, sparkle_name, width, height, lvl, colorkey=-1)
+
+
+class LifeIcon(BackgroundObject):
+    def __init__(self, lvl=1):
+        life_icon_name = img_cfg.get('background').get('life-icon')
+        width = size_cfg.get('background').get('life-icon').get('x')
+        height = size_cfg.get('background').get('life-icon').get('y')
+        BackgroundObject.__init__(self, life_icon_name, width, height, lvl, moving=False, colorkey=-1)

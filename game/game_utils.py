@@ -2,7 +2,7 @@ import os
 import pygame
 from pygame.locals import *
 import numpy as np
-
+import pandas as pd
 
 if not pygame.font:
     print('Warning, fonts disabled')
@@ -42,7 +42,7 @@ def load_sound(name):
     return sound
 
 
-def darken_image(surface, lvl):
+def darken_image(surface, lvl, colorkey):
     if lvl < 0:
         lvl = 0
     elif lvl > 10:
@@ -55,8 +55,17 @@ def darken_image(surface, lvl):
     diff = (dest - src) * 0.10 * lvl
     darkened = src + diff.astype(np.uint)
     pygame.surfarray.blit_array(surface, darkened)
+    if colorkey is not None:
+        if colorkey is -1:
+            colorkey = surface.get_at((0, 0))
+        surface.set_colorkey(colorkey, RLEACCEL)
     return surface
 
 
 def resize_image(surface, width, height):
     return pygame.transform.scale(surface, (width, height))
+
+
+def read_tiles_csv(file_name):
+    fullname = os.path.join('game_files/tiles_layout', file_name)
+    return pd.read_csv(fullname).values
