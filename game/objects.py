@@ -8,9 +8,8 @@ import numpy as np
 class Bar(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        bar_name = img_cfg.get('bars').get('basic')
-        width = size_cfg.get('bars').get('basic').get('x')
-        height = size_cfg.get('bars').get('basic').get('y')
+        bar_name = self.get_name()
+        width, height = self.get_size()
         self.image, self.rect = load_image(bar_name, width=width, height=height)
         screen = pygame.display.get_surface()
         self.area = screen.get_rect()
@@ -36,13 +35,40 @@ class Bar(pygame.sprite.Sprite):
     def set_pos(self, x, y):
         self.rect.topleft = x, y
 
+    def get_name(self):
+        return img_cfg.get('bars').get('basic')
+
+    def get_size(self):
+        return size_cfg.get('bars').get('basic').get('x'), size_cfg.get('bars').get('basic').get('y')
+
+
+class EarthBar(Bar):
+    def __init__(self):
+        Bar.__init__(self)
+
+    def get_name(self):
+        return img_cfg.get('bars').get('earth-bar')
+
+    def get_size(self):
+        return size_cfg.get('bars').get('earth-bar').get('x'), size_cfg.get('bars').get('earth-bar').get('y')
+
+
+class MetalBar(Bar):
+    def __init__(self):
+        Bar.__init__(self)
+
+    def get_name(self):
+        return img_cfg.get('bars').get('metal-bar')
+
+    def get_size(self):
+        return size_cfg.get('bars').get('metal-bar').get('x'), size_cfg.get('bars').get('metal-bar').get('y')
+
 
 class Ball(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        ball_name = img_cfg.get('balls').get('basic')
-        width = size_cfg.get('balls').get('basic').get('x')
-        height = size_cfg.get('balls').get('basic').get('y')
+        ball_name = self.get_name()
+        width, height = self.get_size()
         self.image, self.rect = load_image(ball_name, width=width, height=height, colorkey=-1)
 
         self.speed = 7
@@ -83,6 +109,7 @@ class Ball(pygame.sprite.Sprite):
         self.rect.topleft = x, y
 
     # TODO consider only checking side collisions if not => front collision
+    # TODO bar collision only with up face of the bar
     def collide_bar(self, bar_sprites):
         is_in_collision = False
         for bar_sprite in pygame.sprite.spritecollide(self, bar_sprites, dokill=0):
@@ -145,6 +172,34 @@ class Ball(pygame.sprite.Sprite):
                 return True
         return False
 
+    def get_name(self):
+        return img_cfg.get('balls').get('basic')
+
+    def get_size(self):
+        return size_cfg.get('balls').get('basic').get('x'), size_cfg.get('balls').get('basic').get('y')
+
+
+class EarthBall(Ball):
+    def __init__(self):
+        Ball.__init__(self)
+
+    def get_name(self):
+        return img_cfg.get('balls').get('earth-ball')
+
+    def get_size(self):
+        return size_cfg.get('balls').get('earth-ball').get('x'), size_cfg.get('balls').get('earth-ball').get('y')
+
+
+class MetalBall(Ball):
+    def __init__(self):
+        Ball.__init__(self)
+
+    def get_name(self):
+        return img_cfg.get('balls').get('metal-ball')
+
+    def get_size(self):
+        return size_cfg.get('balls').get('metal-ball').get('x'), size_cfg.get('balls').get('metal-ball').get('y')
+
 
 class Tile(pygame.sprite.Sprite):
     def __init__(self, lives_left=1):
@@ -180,6 +235,61 @@ class TestStrongTile(Tile):
         return img_cfg.get('tiles').get('basic-strong')
 
 
+class EarthTile1(Tile):
+    def __init__(self):
+        Tile.__init__(self, lives_left=1)
+
+    def get_tile_name(self):
+        return img_cfg.get('tiles').get('earth-tile-1')
+
+    def get_size(self):
+        return size_cfg.get('tiles').get('earth-tile-1').get('x'), size_cfg.get('tiles').get('earth-tile-1').get('y')
+
+
+class EarthTile2(Tile):
+    def __init__(self):
+        Tile.__init__(self, lives_left=2)
+
+    def get_tile_name(self):
+        return img_cfg.get('tiles').get('earth-tile-2')
+
+    def get_size(self):
+        return size_cfg.get('tiles').get('earth-tile-2').get('x'), size_cfg.get('tiles').get('earth-tile-2').get('y')
+
+
+class MetalTile1(Tile):
+    def __init__(self):
+        Tile.__init__(self, lives_left=1)
+
+    def get_tile_name(self):
+        return img_cfg.get('tiles').get('metal-tile-1')
+
+    def get_size(self):
+        return size_cfg.get('tiles').get('metal-tile-1').get('x'), size_cfg.get('tiles').get('metal-tile-1').get('y')
+
+
+class MetalTile2(Tile):
+    def __init__(self):
+        Tile.__init__(self, lives_left=2)
+
+    def get_tile_name(self):
+        return img_cfg.get('tiles').get('metal-tile-2')
+
+    def get_size(self):
+        return size_cfg.get('tiles').get('metal-tile-2').get('x'), size_cfg.get('tiles').get('metal-tile-2').get('y')
+
+
+class MetalTile3(Tile):
+    def __init__(self):
+        Tile.__init__(self, lives_left=3)
+
+    def get_tile_name(self):
+        return img_cfg.get('tiles').get('metal-tile-3')
+
+    def get_size(self):
+        return size_cfg.get('tiles').get('metal-tile-3').get('x'), size_cfg.get('tiles').get('metal-tile-3').get('y')
+
+
 class BackgroundObject(pygame.sprite.Sprite):
     # lvl value indicates how far from the foreground the object is
     def __init__(self, bg_obj_name, width, height, lvl=1, moving=True, colorkey=None):
@@ -194,6 +304,8 @@ class BackgroundObject(pygame.sprite.Sprite):
         self.vector = (angle, self.speed)
 
     def update(self):
+        # TODO randomize the movement and do not allow get  away from the screen
+        # TODO slow down the movement (less than one pixel per frame) e.g. angle changes with a normal distribution
         if self.moving:
             self.rect = self.get_updated_pos()
             self.vector = (self.vector[0] + math.pi / 24, self.speed)
@@ -223,3 +335,27 @@ class LifeIcon(BackgroundObject):
         width = size_cfg.get('background').get('life-icon').get('x')
         height = size_cfg.get('background').get('life-icon').get('y')
         BackgroundObject.__init__(self, life_icon_name, width, height, lvl, moving=False, colorkey=-1)
+
+
+class LifeIcon2(BackgroundObject):
+    def __init__(self, lvl=2):
+        life_icon_name = img_cfg.get('background').get('life-icon-2')
+        width = size_cfg.get('background').get('life-icon-2').get('x')
+        height = size_cfg.get('background').get('life-icon-2').get('y')
+        BackgroundObject.__init__(self, life_icon_name, width, height, lvl, moving=False, colorkey=-1)
+
+
+class EarthBackground(BackgroundObject):
+    def __init__(self, lvl=2):
+        sparkle_name = img_cfg.get('background').get('earth-background')
+        width = size_cfg.get('background').get('earth-background').get('x')
+        height = size_cfg.get('background').get('earth-background').get('y')
+        BackgroundObject.__init__(self, sparkle_name, width, height, lvl, colorkey=-1)
+
+
+class MetalBackground(BackgroundObject):
+    def __init__(self, lvl=2):
+        sparkle_name = img_cfg.get('background').get('metal-background')
+        width = size_cfg.get('background').get('metal-background').get('x')
+        height = size_cfg.get('background').get('metal-background').get('y')
+        BackgroundObject.__init__(self, sparkle_name, width, height, lvl, colorkey=-1)

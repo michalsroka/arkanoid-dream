@@ -1,2 +1,4 @@
 tiles-layout:
   test: test_tiles.csv
+  earth: earth_tiles.csv
+  metal: metal_tiles.csv
