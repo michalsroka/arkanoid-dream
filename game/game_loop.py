@@ -31,7 +31,7 @@ def main():
                 elif event.key == K_RIGHT:
                     scene.bar.move_right()
                 elif event.key == K_SPACE:
-                    if judge.scene.ball_on_bar:
+                    if judge.scene.ball.on_bar:
                         judge.start_ball()
             elif event.type == KEYUP:
                 if event.key == K_RIGHT or event.key == K_LEFT:
