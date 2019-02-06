@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import *
 from game.config import size_cfg
-from game.scenes import TestScene, TestSceneLayout
+from game.scenes import TestScene, TestSceneLayout, EarthScene, MetalScene
 from game.judge import Judge
 
 
@@ -10,11 +10,11 @@ def main():
     res_x = size_cfg.get('resolution').get('x')
     res_y = size_cfg.get('resolution').get('y')
     screen = pygame.display.set_mode((res_x, res_y))
-    scene = TestSceneLayout(screen)
+
+    scene = MetalScene(screen)
+
     pygame.display.flip()
-
     judge = Judge(scene)
-
     clock = pygame.time.Clock()
 
     while 1:

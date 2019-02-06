@@ -1,22 +1,61 @@
 resolution:
-  x: 800
-  y: 600
+  x: 1200
+  y: 800
 tiles:
   basic:
-    x: 40
-    y: 30
+    x: 80
+    y: 50
+  earth-tile-1:
+    x: 80
+    y: 50
+  earth-tile-2:
+    x: 80
+    y: 50
+  metal-tile-1:
+    x: 90
+    y: 50
+  metal-tile-2:
+    x: 90
+    y: 50
+  metal-tile-3:
+    x: 90
+    y: 50
 balls:
   basic:
     x: 10
     y: 10
+  earth-ball:
+    x: 10
+    y: 10
+  metal-ball:
+    x: 15
+    y: 15
 bars:
   basic:
     x: 80
     y: 10
+  earth-bar:
+    x: 80
+    y: 10
+  metal-bar:
+    x: 90
+    y: 15
 background:
   sparkle-basic:
+    x: 90
+    y: 90
+  earth-background-2:
+    x: 90
+    y: 90
+  earth-background:
+    x: 20
+    y: 20
+  metal-background:
     x: 90
     y: 90
   life-icon:
     x: 20
     y: 20
+  life-icon-2:
+    x: 40
+    y: 40

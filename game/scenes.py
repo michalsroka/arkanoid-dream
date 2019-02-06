@@ -80,7 +80,7 @@ class Scene:
 
     def set_ball_off_bar(self):
         self.ball.on_bar = False
-        self.ball.vector = (3/2 *math.pi, self.ball.speed)
+        self.ball.vector = (3 / 2 * math.pi, self.ball.speed)
 
     def get_tiles_from_layout2(self, file_name, screen, row_gap=30, tile_shift=40):
         layout_arr = read_tiles_csv(file_name)
@@ -101,7 +101,7 @@ class Scene:
         screen_center_x = screen.get_rect().centerx
         tiles = list()
         num_of_columns = len(layout_arr[0])
-        tile_x_size, tile_y_size = Tile().rect.size
+        tile_x_size, tile_y_size = self.pick_tile(1).rect.size
         tiles_len_x = num_of_columns * tile_x_size
         left_x = screen_center_x - (tiles_len_x / 2)
         assert left_x > 0, "Too many columns of tiles. Change layout."
@@ -154,7 +154,7 @@ class TestScene(Scene):
 
 
 class TestSceneLayout(Scene):
-    def __init__(self, screen, lives=4):
+    def __init__(self, screen, lives=3):
         screen_x, screen_y = screen.get_size()
         bar = Bar()
         bar.rect.midbottom = screen.get_rect().midbottom
@@ -182,3 +182,89 @@ class TestSceneLayout(Scene):
                 lvl_sparkles.append(sparkle)
             sparkles.append(lvl_sparkles)
         Scene.__init__(self, screen, bar, ball, life_icons, lives, tiles, background_objects=sparkles)
+
+
+class EarthScene(Scene):
+    def __init__(self, screen, lives=3):
+        background_img_name = img_cfg.get('background').get('earth-background-image')
+        screen_x, screen_y = screen.get_size()
+        background_surface, background_rect = load_image(background_img_name, width=screen_x, height=screen_y)
+        bar = EarthBar()
+        bar.rect.midbottom = screen.get_rect().midbottom
+        bar.rect = bar.rect.move(0, -5)
+        ball = EarthBall()
+        ball.rect.midbottom = bar.rect.midbottom
+        ball.rect = ball.rect.move(0, -5)
+        tiles_layout_file = tile_cfg.get('tiles-layout').get('earth')
+        tiles = Scene.get_tiles_from_layout(self, tiles_layout_file, screen)
+        life_icons = list()
+        for i in range(lives):
+            tmp_life_icon = LifeIcon2()
+            life_icon_y = 30
+            life_icon_x = screen_x - 30 - (i * tmp_life_icon.rect.size[0])
+            tmp_life_icon.rect = tmp_life_icon.rect.move(life_icon_x, life_icon_y)
+            life_icons.append(tmp_life_icon)
+        sparkles = list()
+        for lvl in range(4, 8):
+            lvl_sparkles = list()
+            for i in range(lvl * 2):
+                x_coord = np.random.rand() * screen.get_rect().right
+                y_coord = np.random.rand() * screen.get_rect().bottom
+                sparkle = EarthBackground(lvl=lvl)
+                sparkle.rect = sparkle.rect.move(x_coord, y_coord)
+                lvl_sparkles.append(sparkle)
+            sparkles.append(lvl_sparkles)
+        Scene.__init__(self, screen, bar, ball, life_icons, lives, tiles,
+                       background_objects=sparkles, background=background_surface)
+
+    def pick_tile(self, num):
+        if num == 0:
+            return None
+        elif num == 1:
+            return EarthTile1()
+        elif num == 2:
+            return EarthTile2()
+
+
+class MetalScene(Scene):
+    def __init__(self, screen, lives=3):
+        background_img_name = img_cfg.get('background').get('metal-background-image')
+        screen_x, screen_y = screen.get_size()
+        background_surface, background_rect = load_image(background_img_name, width=screen_x, height=screen_y)
+        bar = MetalBar()
+        bar.rect.midbottom = screen.get_rect().midbottom
+        bar.rect = bar.rect.move(0, -5)
+        ball = MetalBall()
+        ball.rect.midbottom = bar.rect.midbottom
+        ball.rect = ball.rect.move(0, -5)
+        tiles_layout_file = tile_cfg.get('tiles-layout').get('metal')
+        tiles = Scene.get_tiles_from_layout(self, tiles_layout_file, screen)
+        life_icons = list()
+        for i in range(lives):
+            tmp_life_icon = LifeIcon2()
+            life_icon_y = 30
+            life_icon_x = screen_x - 30 - (i * tmp_life_icon.rect.size[0])
+            tmp_life_icon.rect = tmp_life_icon.rect.move(life_icon_x, life_icon_y)
+            life_icons.append(tmp_life_icon)
+        sparkles = list()
+        for lvl in range(4, 8):
+            lvl_sparkles = list()
+            for i in range(lvl * 2):
+                x_coord = np.random.rand() * screen.get_rect().right
+                y_coord = np.random.rand() * screen.get_rect().bottom
+                sparkle = MetalBackground(lvl=lvl)
+                sparkle.rect = sparkle.rect.move(x_coord, y_coord)
+                lvl_sparkles.append(sparkle)
+            sparkles.append(lvl_sparkles)
+        Scene.__init__(self, screen, bar, ball, life_icons, lives, tiles,
+                       background_objects=sparkles, background=background_surface)
+
+    def pick_tile(self, num):
+        if num == 0:
+            return None
+        elif num == 1:
+            return MetalTile1()
+        elif num == 2:
+            return MetalTile2()
+        elif num == 3:
+            return MetalTile3()
