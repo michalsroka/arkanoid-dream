@@ -11,7 +11,7 @@ def main():
     res_y = size_cfg.get('resolution').get('y')
     screen = pygame.display.set_mode((res_x, res_y))
 
-    scene = MetalScene(screen)
+    scene = EarthScene(screen)
 
     pygame.display.flip()
     judge = Judge(scene)
