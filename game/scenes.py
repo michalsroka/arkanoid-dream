@@ -60,7 +60,7 @@ class Scene:
                 lvl_sprites.update()
         self.life_icon_sprites.update()
         self.bar_sprites.update()
-        self.ball_sprites.update(self.bar.rect.midtop[0], self.bar.rect.midtop[1])
+        self.ball_sprites.update(self.bar.rect.centerx, self.bar.rect.centery)
         self.tile_sprites.update()
 
     def draw_scene(self):
