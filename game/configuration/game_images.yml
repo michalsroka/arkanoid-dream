@@ -16,7 +16,10 @@ tiles:
   metal-tile-3: metal-tile-3.png
 background:
   sparkle-basic: sparkle.png
-  earth-background: earth-background.png
+  earth-background: earth-background-sparkle.png
+  earth-background-2: earth-background.png
   metal-background: metal-background.png
   life-icon: heart.png
   life-icon-2: heart-2.png
+  earth-background-image: earth-background-image.png
+  metal-background-image: metal-background-image.png

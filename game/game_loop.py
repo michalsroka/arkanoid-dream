@@ -11,12 +11,10 @@ def main():
     res_y = size_cfg.get('resolution').get('y')
     screen = pygame.display.set_mode((res_x, res_y))
 
-    scene = EarthScene(screen)
+    scene = MetalScene(screen)
 
     pygame.display.flip()
-
     judge = Judge(scene)
-
     clock = pygame.time.Clock()
 
     while 1:

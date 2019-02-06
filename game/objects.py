@@ -6,11 +6,11 @@ import numpy as np
 
 
 class Bar(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, colorkey=None):
         pygame.sprite.Sprite.__init__(self)
         bar_name = self.get_name()
         width, height = self.get_size()
-        self.image, self.rect = load_image(bar_name, width=width, height=height)
+        self.image, self.rect = load_image(bar_name, width=width, height=height, colorkey=colorkey)
         screen = pygame.display.get_surface()
         self.area = screen.get_rect()
         self.rect = self.rect.move(self.area.right / 2 - self.rect.right / 2,
@@ -55,7 +55,7 @@ class EarthBar(Bar):
 
 class MetalBar(Bar):
     def __init__(self):
-        Bar.__init__(self)
+        Bar.__init__(self, colorkey=-1)
 
     def get_name(self):
         return img_cfg.get('bars').get('metal-bar')
@@ -206,7 +206,6 @@ class Tile(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         tile_name = self.get_tile_name()
         width, height = self.get_size()
-        height = size_cfg.get('tiles').get('basic').get('y')
         self.image, self.rect = load_image(tile_name, width=width, height=height)
         self.lives_left = lives_left
 

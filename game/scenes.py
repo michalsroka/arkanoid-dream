@@ -101,7 +101,7 @@ class Scene:
         screen_center_x = screen.get_rect().centerx
         tiles = list()
         num_of_columns = len(layout_arr[0])
-        tile_x_size, tile_y_size = Tile().rect.size
+        tile_x_size, tile_y_size = self.pick_tile(1).rect.size
         tiles_len_x = num_of_columns * tile_x_size
         left_x = screen_center_x - (tiles_len_x / 2)
         assert left_x > 0, "Too many columns of tiles. Change layout."
@@ -186,7 +186,9 @@ class TestSceneLayout(Scene):
 
 class EarthScene(Scene):
     def __init__(self, screen, lives=3):
+        background_img_name = img_cfg.get('background').get('earth-background-image')
         screen_x, screen_y = screen.get_size()
+        background_surface, background_rect = load_image(background_img_name, width=screen_x, height=screen_y)
         bar = EarthBar()
         bar.rect.midbottom = screen.get_rect().midbottom
         bar.rect = bar.rect.move(0, -5)
@@ -212,7 +214,8 @@ class EarthScene(Scene):
                 sparkle.rect = sparkle.rect.move(x_coord, y_coord)
                 lvl_sparkles.append(sparkle)
             sparkles.append(lvl_sparkles)
-        Scene.__init__(self, screen, bar, ball, life_icons, lives, tiles, background_objects=sparkles)
+        Scene.__init__(self, screen, bar, ball, life_icons, lives, tiles,
+                       background_objects=sparkles, background=background_surface)
 
     def pick_tile(self, num):
         if num == 0:
@@ -225,7 +228,9 @@ class EarthScene(Scene):
 
 class MetalScene(Scene):
     def __init__(self, screen, lives=3):
+        background_img_name = img_cfg.get('background').get('metal-background-image')
         screen_x, screen_y = screen.get_size()
+        background_surface, background_rect = load_image(background_img_name, width=screen_x, height=screen_y)
         bar = MetalBar()
         bar.rect.midbottom = screen.get_rect().midbottom
         bar.rect = bar.rect.move(0, -5)
@@ -251,7 +256,8 @@ class MetalScene(Scene):
                 sparkle.rect = sparkle.rect.move(x_coord, y_coord)
                 lvl_sparkles.append(sparkle)
             sparkles.append(lvl_sparkles)
-        Scene.__init__(self, screen, bar, ball, life_icons, lives, tiles, background_objects=sparkles)
+        Scene.__init__(self, screen, bar, ball, life_icons, lives, tiles,
+                       background_objects=sparkles, background=background_surface)
 
     def pick_tile(self, num):
         if num == 0:
