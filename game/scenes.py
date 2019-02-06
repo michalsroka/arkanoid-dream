@@ -47,7 +47,6 @@ class Scene:
         self.ball_sprites.draw(self.screen)
         self.tile_sprites.draw(self.screen)
         self.life_icon_sprites.draw(self.screen)
-        self.ball_on_bar = True
         self.lives = lives
 
     def update_scene(self):
