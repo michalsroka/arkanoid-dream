@@ -291,33 +291,39 @@ class MetalTile3(Tile):
 
 class BackgroundObject(pygame.sprite.Sprite):
     # lvl value indicates how far from the foreground the object is
-    def __init__(self, bg_obj_name, width, height, lvl=1, moving=True, colorkey=None):
+    def __init__(self, bg_obj_name, width, height, lvl=1, moving=True, colorkey=None, speed=2.):
         pygame.sprite.Sprite.__init__(self)
         width = int(width * (0.9 ** lvl))
         height = int(height * (0.9 ** lvl))
         self.image, self.rect = load_image(bg_obj_name, width=width, height=height, colorkey=colorkey)
         self.image = darken_image(self.image, lvl, colorkey)
         self.moving = moving
-        self.speed = 2
+        self.speed = speed
         angle = np.random.rand() * 2 * math.pi
         self.vector = (angle, self.speed)
+        self.x_pos = None
+        self.y_pos = None
 
     def update(self):
         # TODO randomize the movement and do not allow get  away from the screen
         # TODO slow down the movement (less than one pixel per frame) e.g. angle changes with a normal distribution
         if self.moving:
             self.rect = self.get_updated_pos()
-            self.vector = (self.vector[0] + math.pi / 24, self.speed)
+            new_angle = np.random.normal(self.vector[0], math.pi / 24)
+            self.vector = (new_angle, self.speed)
             if self.vector[0] > 2 * math.pi:
                 self.vector = (self.vector[0] - 2 * math.pi, self.speed)
 
     def get_updated_pos(self):
         (angle, r) = self.vector
         (dx, dy) = (r * math.cos(angle), r * math.sin(angle))
-        return self.rect.move(dx, dy)
+        self.x_pos += dx
+        self.y_pos += dy
+        self.rect.center = (int(self.x_pos), int(self.y_pos))
+        return self.rect
 
     def set_pos(self, x, y):
-        self.rect.topleft = x, y
+        self.x_pos, self.y_pos = x, y
 
 
 class Sparkle(BackgroundObject):
@@ -349,7 +355,7 @@ class EarthBackground(BackgroundObject):
         sparkle_name = img_cfg.get('background').get('earth-background')
         width = size_cfg.get('background').get('earth-background').get('x')
         height = size_cfg.get('background').get('earth-background').get('y')
-        BackgroundObject.__init__(self, sparkle_name, width, height, lvl, colorkey=-1)
+        BackgroundObject.__init__(self, sparkle_name, width, height, lvl, colorkey=-1, speed=1.0)
 
 
 class MetalBackground(BackgroundObject):
@@ -357,4 +363,4 @@ class MetalBackground(BackgroundObject):
         sparkle_name = img_cfg.get('background').get('metal-background')
         width = size_cfg.get('background').get('metal-background').get('x')
         height = size_cfg.get('background').get('metal-background').get('y')
-        BackgroundObject.__init__(self, sparkle_name, width, height, lvl, colorkey=-1)
+        BackgroundObject.__init__(self, sparkle_name, width, height, lvl, colorkey=-1, speed=0.3)

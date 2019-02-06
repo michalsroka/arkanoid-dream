@@ -211,6 +211,7 @@ class EarthScene(Scene):
                 y_coord = np.random.rand() * screen.get_rect().bottom
                 sparkle = EarthBackground(lvl=lvl)
                 sparkle.rect = sparkle.rect.move(x_coord, y_coord)
+                sparkle.set_pos(x_coord, y_coord)
                 lvl_sparkles.append(sparkle)
             sparkles.append(lvl_sparkles)
         Scene.__init__(self, screen, bar, ball, life_icons, lives, tiles,
@@ -253,6 +254,7 @@ class MetalScene(Scene):
                 y_coord = np.random.rand() * screen.get_rect().bottom
                 sparkle = MetalBackground(lvl=lvl)
                 sparkle.rect = sparkle.rect.move(x_coord, y_coord)
+                sparkle.set_pos(x_coord, y_coord)
                 lvl_sparkles.append(sparkle)
             sparkles.append(lvl_sparkles)
         Scene.__init__(self, screen, bar, ball, life_icons, lives, tiles,
